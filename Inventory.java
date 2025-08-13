@@ -1,42 +1,97 @@
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.io.*;
 
 public class Inventory {
-    // List to store all Vehicle objects
+    // This will hold all the vehicles in memory
     private ArrayList<Vehicle> vehicles;
 
-    // Constructor: creates the ArrayList and seeds it with initial data
+    // File name to store vehicle data (will be created in your project folder)
+    private final String fileName = "vehicles.txt";
+
+    // Constructor: runs when we create an Inventory object
     public Inventory() {
-        vehicles = new ArrayList<Vehicle>();
-        seedData(); // add some sample vehicles
+        vehicles = new ArrayList<>();
+        loadFromFile(); // Load saved vehicles when program starts
     }
 
-    // Adds sample vehicles to the inventory when the program starts
-    private void seedData() {
-        vehicles.add(new Vehicle("V01", "Toyota Corolla", 45000, 50.0, 0.20, true));
-        vehicles.add(new Vehicle("V02", "Honda Civic", 30000, 55.0, 0.25, true));
-        vehicles.add(new Vehicle("V03", "Ford Focus", 60000, 45.0, 0.18, false));
-        vehicles.add(new Vehicle("V04", "Hyundai Elantra", 25000, 48.0, 0.22, true));
-        vehicles.add(new Vehicle("V05", "Nissan Altima", 35000, 52.0, 0.24, true));
-        vehicles.add(new Vehicle("V06", "Kia Optima", 50000, 49.0, 0.21, false));
-        vehicles.add(new Vehicle("V07", "Chevrolet Malibu", 40000, 50.0, 0.20, true));
-        vehicles.add(new Vehicle("V08", "Volkswagen Passat", 28000, 53.0, 0.23, true));
-        vehicles.add(new Vehicle("V09", "Mazda 6", 42000, 51.0, 0.19, true));
-        vehicles.add(new Vehicle("V10", "BMW 3 Series", 15000, 80.0, 0.35, true));
+    /**
+     * Loads vehicle data from the file into the ArrayList.
+     * If the file doesn't exist, we just start with an empty list.
+     */
+    public void loadFromFile() {
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(fileName));
+            String line;
+
+            // Read file line by line
+            while ((line = reader.readLine()) != null) {
+                // Each vehicle's info is separated by commas
+                String[] parts = line.split(",");
+
+                // Create a Vehicle object from the file data
+                Vehicle v = new Vehicle(
+                    parts[0], // Vehicle ID
+                    parts[1], // Brand & Model
+                    Integer.parseInt(parts[2]), // Mileage
+                    Double.parseDouble(parts[3]), // Daily rental price
+                    Double.parseDouble(parts[4]), // Maintenance cost per km
+                    Boolean.parseBoolean(parts[5]) // Availability
+                );
+
+                // Add vehicle to the ArrayList
+                vehicles.add(v);
+            }
+
+            reader.close(); // Close file after reading
+        } 
+        catch (FileNotFoundException e) {
+            // If file doesn't exist, that's fine — we'll create it later
+            System.out.println("No previous data found, starting fresh.");
+        } 
+        catch (IOException e) {
+            System.out.println("Error reading file: " + e.getMessage());
+        }
     }
 
-    // Displays the full inventory in a table format
+    /**
+     * Saves all vehicle data from the ArrayList to the file.
+     * This is called whenever a change is made.
+     */
+    public void saveToFile() {
+        try {
+            PrintWriter writer = new PrintWriter(fileName);
+
+            // Loop through each vehicle and write its details
+            for (Vehicle v : vehicles) {
+                writer.println(v.getVehicleId() + "," +
+                               v.getBrandModel() + "," +
+                               v.getMileage() + "," +
+                               v.getDailyRentalPrice() + "," +
+                               v.getMaintenanceCostPerKm() + "," +
+                               v.isAvailable());
+            }
+
+            writer.close(); // Close file after writing
+        } 
+        catch (IOException e) {
+            System.out.println("Error saving file: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Displays all vehicles in a table format.
+     */
     public void viewInventory() {
         System.out.printf("%-6s %-18s %-11s %-12s %-15s %-10s%n",
             "ID", "Brand & Model", "Mileage", "Daily Price", "Maint. Cost/km", "Status");
         System.out.println("----------------------------------------------------------------------");
 
-        for (int i = 0; i < vehicles.size(); i++) {
-            Vehicle v = vehicles.get(i);
-            String status = v.isAvailable() ? "Available" : "Unavailable"; // check availability
+        // Loop through vehicles and print details
+        for (Vehicle v : vehicles) {
+            String status = v.isAvailable() ? "Available" : "Unavailable";
             String mileageWithUnit = v.getMileage() + "km";
 
-            // Print vehicle details in formatted table
             System.out.printf("%-6s %-18s %-11s $%-11.2f $%-14.2f %-10s%n",
                 v.getVehicleId(),
                 v.getBrandModel(),
@@ -47,42 +102,50 @@ public class Inventory {
         }
     }
 
-    // Adds a new vehicle to the inventory
+    /**
+     * Adds a new vehicle to the inventory and saves to file.
+     */
     public void addVehicle(Vehicle vehicle) {
-        vehicles.add(vehicle);
+        vehicles.add(vehicle); // Add to list
+        saveToFile(); // Save changes to file immediately
         System.out.println("Vehicle added successfully!");
     }
 
-    // Updates the availability status of a vehicle by its ID
+    /**
+     * Updates availability of a specific vehicle and saves changes.
+     */
     public void updateAvailability(String vehicleId, boolean availability) {
         boolean found = false;
 
-        for (int i = 0; i < vehicles.size(); i++) {
-            Vehicle v = vehicles.get(i);
+        // Search for the vehicle by ID
+        for (Vehicle v : vehicles) {
             if (v.getVehicleId().equalsIgnoreCase(vehicleId)) {
-                v.setAvailable(availability); // update availability
+                v.setAvailable(availability); // Update status
+                saveToFile(); // Save changes
                 System.out.println("Availability updated for Vehicle ID: " + vehicleId);
                 found = true;
-                break;
+                break; // Stop loop once found
             }
         }
 
         if (!found) {
-            System.out.println("Vehicle ID not found!"); // if no match found
+            System.out.println("Vehicle ID not found!");
         }
     }
 
-    // Allows a user to book a vehicle
+    /**
+     * Books a vehicle if available, updates its status, and calculates cost.
+     */
     public void bookVehicle(Scanner sc) {
         System.out.print("Enter Vehicle ID to book: ");
         String id = sc.nextLine();
 
         Vehicle vehicleToBook = null;
 
-        // Find the vehicle in the list
-        for (int i = 0; i < vehicles.size(); i++) {
-            if (vehicles.get(i).getVehicleId().equalsIgnoreCase(id)) {
-                vehicleToBook = vehicles.get(i);
+        // Find the vehicle by ID
+        for (Vehicle v : vehicles) {
+            if (v.getVehicleId().equalsIgnoreCase(id)) {
+                vehicleToBook = v;
                 break;
             }
         }
@@ -97,20 +160,21 @@ public class Inventory {
             return;
         }
 
-        // Ask user for rental duration and estimated distance
+        // Get rental details from user
         System.out.print("Enter rental duration in days: ");
         int rentalDays = sc.nextInt();
 
         System.out.print("Enter estimated kilometers to drive: ");
         int estimatedKm = sc.nextInt();
-        sc.nextLine(); // consume leftover newline
+        sc.nextLine(); // Consume leftover newline
 
-        // Calculate total rental cost
+        // Calculate total cost
         double cost = (vehicleToBook.getDailyRentalPrice() * rentalDays)
                     + (vehicleToBook.getMaintenanceCostPerKm() * estimatedKm);
 
-        // Mark the vehicle as no longer available
+        // Mark vehicle as unavailable
         vehicleToBook.setAvailable(false);
+        saveToFile(); // Save updated status
 
         System.out.println("Booking successful!");
         System.out.printf("Estimated total cost: $%.2f%n", cost);
