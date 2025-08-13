@@ -1,0 +1,11 @@
+V01,Toyota Corolla,45000,50.0,0.2,true
+V02,Honda Civic,30000,55.0,0.25,true
+V03,Ford Focus,60000,45.0,0.18,false
+V04,Hyundai Elantra,25000,48.0,0.22,true
+V05,Nissan Altima,35000,52.0,0.24,true
+V06,Kia Optima,50000,49.0,0.21,false
+V07,Chevrolet Malibu,40000,50.0,0.2,true
+V08,Volkswagen Passat,28000,53.0,0.23,true
+V09,Mazda 6,42000,51.0,0.19,true
+V10,BMW 3 Series,15000,80.0,0.35,true
+V11,Hyundai Sonata,20000,88.0,1.0,true

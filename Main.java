@@ -2,15 +2,11 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        // Create a Scanner object to read input from the user
-        Scanner sc = new Scanner(System.in);
+        Scanner sc = new Scanner(System.in); // Scanner to read user input
+        Inventory inventory = new Inventory(); // Load saved inventory or sample vehicles
 
-        // Create an Inventory object to manage vehicles
-        Inventory inventory = new Inventory();
-
-        // Main program loop
         while (true) {
-            // Display menu options
+            // Display the menu options
             System.out.println("\n--- Vehicle Inventory Management ---");
             System.out.println("1. View Inventory");
             System.out.println("2. Add Vehicle");
@@ -19,67 +15,85 @@ public class Main {
             System.out.println("5. Exit");
             System.out.print("Choose an option: ");
 
-            // Read the user's menu choice
-            int choice = sc.nextInt();
-            sc.nextLine(); // Clear the newline left by nextInt()
+            String input = sc.nextLine(); // Read input as String for safety
+            int choice;
 
-            // Option 1: View all vehicles in the inventory
+            // Try converting input to an integer
+            try {
+                choice = Integer.parseInt(input);
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid option"); // Input is not a number
+                continue; // Go back to the menu
+            }
+
+            // Process menu choices
             if (choice == 1) {
+                // View the current inventory
                 inventory.viewInventory();
 
-            // Option 2: Add a new vehicle to the inventory
             } else if (choice == 2) {
-                System.out.print("Enter Vehicle ID: ");
-                String id = sc.nextLine();
+                // Add a new vehicle
+                try {
+                    System.out.print("Enter Vehicle ID: ");
+                    String id = sc.nextLine();
 
-                System.out.print("Enter Brand & Model: ");
-                String brand = sc.nextLine();
+                    System.out.print("Enter Brand & Model: ");
+                    String brand = sc.nextLine();
 
-                System.out.print("Enter Mileage (km): ");
-                int mileage = sc.nextInt();
+                    System.out.print("Enter Mileage (km): ");
+                    int mileage = Integer.parseInt(sc.nextLine());
 
-                System.out.print("Enter Daily Rental Price: ");
-                double price = sc.nextDouble();
+                    System.out.print("Enter Daily Rental Price: ");
+                    double price = Double.parseDouble(sc.nextLine());
 
-                System.out.print("Enter Maintenance Cost per Km: ");
-                double maintenanceCost = sc.nextDouble();
-                sc.nextLine(); // Clear newline
+                    System.out.print("Enter Maintenance Cost per Km: ");
+                    double maintenanceCost = Double.parseDouble(sc.nextLine());
 
-                System.out.print("Is Available? (true/false): ");
-                boolean available = sc.nextBoolean();
-                sc.nextLine(); // Clear newline
+                    System.out.print("Is Available? (true/false): ");
+                    boolean available = Boolean.parseBoolean(sc.nextLine());
 
-                // Create a new Vehicle object and add it to the inventory
-                Vehicle newVehicle = new Vehicle(id, brand, mileage, price, maintenanceCost, available);
-                inventory.addVehicle(newVehicle);
+                    Vehicle newVehicle = new Vehicle(id, brand, mileage, price, maintenanceCost, available);
+                    inventory.addVehicle(newVehicle);
 
-            // Option 3: Update availability of an existing vehicle
+                } catch (Exception e) {
+                    // Any input parsing error will trigger this
+                    System.out.println("Invalid option");
+                }
+
             } else if (choice == 3) {
-                System.out.print("Enter Vehicle ID to update availability: ");
-                String id = sc.nextLine();
+                // Update availability of a vehicle
+                try {
+                    System.out.print("Enter Vehicle ID to update availability: ");
+                    String id = sc.nextLine();
 
-                System.out.print("Enter new availability (true/false): ");
-                boolean availability = sc.nextBoolean();
-                sc.nextLine(); // Clear newline
+                    System.out.print("Enter new availability (true/false): ");
+                    boolean availability = Boolean.parseBoolean(sc.nextLine());
 
-                inventory.updateAvailability(id, availability);
+                    inventory.updateAvailability(id, availability);
+                } catch (Exception e) {
+                    System.out.println("Invalid option"); // Wrong input format
+                }
 
-            // Option 4: Book a vehicle
             } else if (choice == 4) {
-                inventory.bookVehicle(sc);
+                // Book a vehicle
+                try {
+                    inventory.bookVehicle(sc);
+                } catch (Exception e) {
+                    System.out.println("Invalid option"); // Wrong input for booking
+                    sc.nextLine(); // Clear leftover scanner buffer
+                }
 
-            // Option 5: Exit the program
             } else if (choice == 5) {
+                // Exit the program
                 System.out.println("Exiting program. Bye!");
                 break;
 
-            // Invalid menu choice
             } else {
-                System.out.println("Invalid option. Try again.");
+                // Any number not 1-5
+                System.out.println("Invalid option");
             }
         }
 
-        // Close the Scanner to free resources
-        sc.close();
+        sc.close(); // Close scanner before exiting
     }
 }
