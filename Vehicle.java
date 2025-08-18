@@ -1,56 +1,28 @@
+// The Vehicle class represents a single car in our system
 public class Vehicle {
-    // Private fields to store vehicle information
-    private String vehicleId;           // Unique ID for the vehicle
-    private String brandModel;          // Brand and model name
-    private int mileage;                // Vehicle mileage in km
-    private double dailyRentalPrice;    // Price to rent per day
-    private double maintenanceCostPerKm;// Maintenance cost per kilometer
-    private boolean available;          // Whether the vehicle is available for rent
+    // Properties (details about the vehicle)
+    private String vehicleId;       // Unique ID (e.g., V1, V2)
+    private String brandModel;      // Brand and Model (e.g., Toyota Corolla)
+    private int mileage;            // Mileage in km
+    private double dailyRentalPrice;// Price per day in dollars
+    private boolean available;      // Whether the car is available or booked
 
-    // Constructor: used to create a new Vehicle object with all details
-    public Vehicle(String vehicleId, String brandModel, int mileage, double dailyRentalPrice, double maintenanceCostPerKm, boolean available) {
+    // Constructor (runs when we create a new Vehicle)
+    public Vehicle(String vehicleId, String brandModel, int mileage, double dailyRentalPrice, boolean available) {
         this.vehicleId = vehicleId;
         this.brandModel = brandModel;
         this.mileage = mileage;
         this.dailyRentalPrice = dailyRentalPrice;
-        this.maintenanceCostPerKm = maintenanceCostPerKm;
         this.available = available;
     }
 
-    // Getters: allow other classes to access private fields
+    // Getter methods (to access vehicle details)
+    public String getVehicleId() { return vehicleId; }
+    public String getBrandModel() { return brandModel; }
+    public int getMileage() { return mileage; }
+    public double getDailyRentalPrice() { return dailyRentalPrice; }
+    public boolean isAvailable() { return available; }
 
-    // Returns the vehicle's unique ID
-    public String getVehicleId() {
-        return vehicleId;
-    }
-
-    // Returns the brand and model
-    public String getBrandModel() {
-        return brandModel;
-    }
-
-    // Returns the mileage
-    public int getMileage() {
-        return mileage;
-    }
-
-    // Returns the daily rental price
-    public double getDailyRentalPrice() {
-        return dailyRentalPrice;
-    }
-
-    // Returns the maintenance cost per km
-    public double getMaintenanceCostPerKm() {
-        return maintenanceCostPerKm;
-    }
-
-    // Returns true if the vehicle is available, false otherwise
-    public boolean isAvailable() {
-        return available;
-    }
-
-    // Setter: allows other classes to update availability
-    public void setAvailable(boolean available) {
-        this.available = available;
-    }
+    // Setter method (to change availability)
+    public void setAvailable(boolean available) { this.available = available; }
 }
