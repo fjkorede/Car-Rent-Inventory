@@ -1,38 +1,44 @@
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 // The Inventory class manages all the vehicles (like a garage list)
 public class Inventory {
-    // This list will hold all our vehicles
     private ArrayList<Vehicle> vehicles;
+    private final String FILE_NAME = "vehicles.txt"; // file to save/load vehicles
 
-    // Constructor: creates the list and adds some sample vehicles
+    // Constructor: load from file OR add 10 sample vehicles if file is empty
     public Inventory() {
         vehicles = new ArrayList<>();
-
-        // Add 10 sample vehicles (preloaded so we always see something)
-        vehicles.add(new Vehicle("V1", "Toyota Corolla", 50000, 50.0, true));
-        vehicles.add(new Vehicle("V2", "Honda Civic", 60000, 55.0, true));
-        vehicles.add(new Vehicle("V3", "Ford Focus", 45000, 45.0, true));
-        vehicles.add(new Vehicle("V4", "Nissan Altima", 70000, 52.0, true));
-        vehicles.add(new Vehicle("V5", "Hyundai Elantra", 40000, 48.0, true));
-        vehicles.add(new Vehicle("V6", "Kia Rio", 35000, 40.0, true));
-        vehicles.add(new Vehicle("V7", "Chevrolet Malibu", 65000, 60.0, true));
-        vehicles.add(new Vehicle("V8", "BMW 3 Series", 30000, 120.0, true));
-        vehicles.add(new Vehicle("V9", "Mercedes C-Class", 28000, 130.0, true));
-        vehicles.add(new Vehicle("V10", "Audi A4", 32000, 125.0, true));
+        loadVehicles(); // try to load from file
+        if (vehicles.isEmpty()) {
+            // if no file yet, preload 10 vehicles
+            vehicles.add(new Vehicle("V1", "Toyota Corolla", 50000, 50.0, true));
+            vehicles.add(new Vehicle("V2", "Honda Civic", 60000, 55.0, true));
+            vehicles.add(new Vehicle("V3", "Ford Focus", 45000, 45.0, true));
+            vehicles.add(new Vehicle("V4", "Nissan Altima", 70000, 52.0, true));
+            vehicles.add(new Vehicle("V5", "Hyundai Elantra", 40000, 48.0, true));
+            vehicles.add(new Vehicle("V6", "Kia Rio", 35000, 40.0, true));
+            vehicles.add(new Vehicle("V7", "Chevrolet Malibu", 65000, 60.0, true));
+            vehicles.add(new Vehicle("V8", "BMW 3 Series", 30000, 120.0, true));
+            vehicles.add(new Vehicle("V9", "Mercedes C-Class", 28000, 130.0, true));
+            vehicles.add(new Vehicle("V10", "Audi A4", 32000, 125.0, true));
+            saveVehicles(); // save them so they appear next time
+        }
     }
 
-    // Show all vehicles in a table format
+    // Show all vehicles
     public void viewInventory() {
-        System.out.println("\n--- Vehicle Inventory ---");
+        if (vehicles.isEmpty()) {
+            System.out.println("No vehicles in the inventory.");
+            return;
+        }
 
-        // Print table headers
+        System.out.println("\n--- Vehicle Inventory ---");
         System.out.printf("%-6s %-18s %-11s %-12s %-10s%n",
             "ID", "Brand & Model", "Mileage", "Daily Price", "Status");
         System.out.println("--------------------------------------------------------------");
 
-        // Loop through the list and print each vehicle
         for (Vehicle v : vehicles) {
             String status = v.isAvailable() ? "Available" : "Booked";
             System.out.printf("%-6s %-18s %-11s $%-11.2f %-10s%n",
@@ -44,25 +50,27 @@ public class Inventory {
         }
     }
 
-    // Add a new vehicle (entered by the user)
+    // Add a new vehicle
     public void addVehicle(Vehicle vehicle) {
-        vehicles.add(vehicle); // Add to the list
+        vehicles.add(vehicle);
+        saveVehicles(); // save to file
         System.out.println("Vehicle added successfully!");
     }
 
-    // Change availability (true = available, false = booked)
+    // Update availability
     public void updateAvailability(String id, boolean available) {
         for (Vehicle v : vehicles) {
             if (v.getVehicleId().equalsIgnoreCase(id)) {
                 v.setAvailable(available);
+                saveVehicles(); // save changes
                 System.out.println("Availability updated for vehicle " + id);
-                return; // Stop after updating
+                return;
             }
         }
         System.out.println("Vehicle ID not found.");
     }
 
-    // Book a vehicle
+    // Book vehicle
     public void bookVehicle(Scanner sc) {
         System.out.print("Enter Vehicle ID to book: ");
         String id = sc.nextLine();
@@ -73,18 +81,11 @@ public class Inventory {
                     System.out.println("Sorry, this vehicle is already booked.");
                     return;
                 }
-
-                // Ask how many days
                 System.out.print("Enter rental duration (days): ");
-                int days = sc.nextInt();
-                sc.nextLine(); // Clear input buffer
-
-                // Calculate total price
+                int days = Integer.parseInt(sc.nextLine());
                 double cost = v.getDailyRentalPrice() * days;
-
-                // Mark as booked
                 v.setAvailable(false);
-
+                saveVehicles(); // save changes
                 System.out.println("Booking successful! Total cost: $" + cost);
                 return;
             }
@@ -92,56 +93,73 @@ public class Inventory {
         System.out.println("Vehicle ID not found.");
     }
 
-    // Return a vehicle
-   // Return vehicle with fees
-public void returnVehicle(Scanner sc) {
-    System.out.print("Enter Vehicle ID to return: ");
-    String id = sc.nextLine();
+    // Return vehicle
+    public void returnVehicle(Scanner sc) {
+        System.out.print("Enter Vehicle ID to return: ");
+        String id = sc.nextLine();
 
-    // Loop through vehicles to find the one with this ID
-    for (Vehicle v : vehicles) {
-        if (v.getVehicleId().equalsIgnoreCase(id)) {
-            
-            // If the vehicle was never booked
-            if (v.isAvailable()) {
-                System.out.println("This vehicle was not booked.");
+        for (Vehicle v : vehicles) {
+            if (v.getVehicleId().equalsIgnoreCase(id)) {
+                if (v.isAvailable()) {
+                    System.out.println("This vehicle was not booked.");
+                    return;
+                }
+
+                System.out.print("Enter kilometers driven: ");
+                int km = Integer.parseInt(sc.nextLine());
+
+                System.out.print("Enter days late (0 if none): ");
+                int lateDays = Integer.parseInt(sc.nextLine());
+
+                int cleaningFee = 20;
+                int maintenance = km * 1;
+                int lateFee = lateDays * 10;
+                int total = cleaningFee + maintenance + lateFee;
+
+                v.setAvailable(true);
+                saveVehicles(); // save changes
+
+                System.out.println("\n--- Return Summary ---");
+                System.out.println("Cleaning Fee:   €" + cleaningFee);
+                System.out.println("Maintenance:    €" + maintenance);
+                System.out.println("Late Fee:       €" + lateFee);
+                System.out.println("TOTAL Charges:  €" + total);
+                System.out.println("Vehicle returned successfully!");
                 return;
             }
+        }
+        System.out.println("Vehicle ID not found.");
+    }
 
-            // Ask for kilometers driven
-            System.out.print("Enter kilometers driven: ");
-            int km = sc.nextInt();
-
-            // Ask for how many days late
-            System.out.print("Enter days late (0 if none): ");
-            int lateDays = sc.nextInt();
-            sc.nextLine(); // clear buffer
-
-            // Fixed fees
-            int cleaningFee = 20;              // always 20
-            int maintenance = km * 1;          // €1 per km
-            int lateFee = lateDays * 10;       // €10 per late day
-
-            // Calculate total charges
-            int total = cleaningFee + maintenance + lateFee;
-
-            // Mark vehicle available again
-            v.setAvailable(true);
-
-            // Show a breakdown of charges
-            System.out.println("\n--- Return Summary ---");
-            System.out.println("Cleaning Fee:   €" + cleaningFee);
-            System.out.println("Maintenance:    €" + maintenance);
-            System.out.println("Late Fee:       €" + lateFee);
-            System.out.println("TOTAL Charges:  €" + total);
-
-            System.out.println("Vehicle returned successfully!");
-            return;
+    // ===== FILE SAVE/LOAD =====
+    private void saveVehicles() {
+        try (PrintWriter pw = new PrintWriter(new FileWriter(FILE_NAME))) {
+            for (Vehicle v : vehicles) {
+                pw.println(v.getVehicleId() + "," + v.getBrandModel() + "," + 
+                           v.getMileage() + "," + v.getDailyRentalPrice() + "," + 
+                           v.isAvailable());
+            }
+        } catch (IOException e) {
+            System.out.println("Error saving vehicles: " + e.getMessage());
         }
     }
 
-    // If ID is not found at all
-    System.out.println("Vehicle ID not found.");
-}
-
+    private void loadVehicles() {
+        try (BufferedReader br = new BufferedReader(new FileReader(FILE_NAME))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts.length == 5) {
+                    String id = parts[0];
+                    String model = parts[1];
+                    int mileage = Integer.parseInt(parts[2]);
+                    double price = Double.parseDouble(parts[3]);
+                    boolean available = Boolean.parseBoolean(parts[4]);
+                    vehicles.add(new Vehicle(id, model, mileage, price, available));
+                }
+            }
+        } catch (IOException e) {
+            // ignore if file doesn’t exist yet
+        }
+    }
 }
