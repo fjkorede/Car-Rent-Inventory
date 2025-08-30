@@ -1,11 +1,12 @@
-V01,Toyota Corolla,45000,50.0,0.2,true
-V02,Honda Civic,30000,55.0,0.25,true
-V03,Ford Focus,60000,45.0,0.18,false
-V04,Hyundai Elantra,25000,48.0,0.22,true
-V05,Nissan Altima,35000,52.0,0.24,true
-V06,Kia Optima,50000,49.0,0.21,false
-V07,Chevrolet Malibu,40000,50.0,0.2,true
-V08,Volkswagen Passat,28000,53.0,0.23,true
-V09,Mazda 6,42000,51.0,0.19,true
-V10,BMW 3 Series,15000,80.0,0.35,true
-V11,Hyundai Sonata,20000,88.0,1.0,true
+V1,Toyota Corolla,50000,50.0,true
+V2,Honda Civic,60000,55.0,true
+V3,Ford Focus,45000,45.0,true
+V4,Nissan Altima,70000,52.0,true
+V5,Hyundai Elantra,40000,48.0,true
+V6,Kia Rio,35000,40.0,true
+V7,Chevrolet Malibu,65000,60.0,true
+V8,BMW 3 Series,30000,120.0,true
+V9,Mercedes C-Class,28000,130.0,true
+V10,Audi A4,32000,125.0,true
+V11,Hyundai Sonata,25000,88.0,true
+V12,Mercedes Benz G63,16000,245.0,true

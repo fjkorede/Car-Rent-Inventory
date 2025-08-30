@@ -11,6 +11,7 @@ public class Inventory {
     public Inventory() {
         vehicles = new ArrayList<>();
         loadVehicles(); // try to load from file
+
         if (vehicles.isEmpty()) {
             // if no file yet, preload 10 vehicles
             vehicles.add(new Vehicle("V1", "Toyota Corolla", 50000, 50.0, true));
@@ -34,19 +35,18 @@ public class Inventory {
             return;
         }
 
-        System.out.println("\n--- Vehicle Inventory ---");
-        System.out.printf("%-6s %-18s %-11s %-12s %-10s%n",
-            "ID", "Brand & Model", "Mileage", "Daily Price", "Status");
-        System.out.println("--------------------------------------------------------------");
-
         for (Vehicle v : vehicles) {
-            String status = v.isAvailable() ? "Available" : "Booked";
-            System.out.printf("%-6s %-18s %-11s $%-11.2f %-10s%n",
-                v.getVehicleId(),
-                v.getBrandModel(),
-                v.getMileage() + "km",
-                v.getDailyRentalPrice(),
-                status);
+            String status;
+            if (v.isNeedsMaintenance()) {
+                status = "Maintenance";
+            } else {
+                status = v.isAvailable() ? "Available" : "Booked";
+            }
+
+            System.out.println(
+                v.getVehicleId() + " | " + v.getBrandModel() + " | "
+                + v.getMileage() + " km | " + status
+            );
         }
     }
 
@@ -54,6 +54,7 @@ public class Inventory {
     public void addVehicle(Vehicle vehicle) {
         vehicles.add(vehicle);
         saveVehicles(); // save to file
+        checkMaintenance(vehicle);  // check mileage immediately
         System.out.println("Vehicle added successfully!");
     }
 
@@ -81,9 +82,11 @@ public class Inventory {
                     System.out.println("Sorry, this vehicle is already booked.");
                     return;
                 }
+
                 System.out.print("Enter rental duration (days): ");
                 int days = Integer.parseInt(sc.nextLine());
                 double cost = v.getDailyRentalPrice() * days;
+
                 v.setAvailable(false);
                 saveVehicles(); // save changes
                 System.out.println("Booking successful! Total cost: $" + cost);
@@ -116,6 +119,12 @@ public class Inventory {
                 int lateFee = lateDays * 10;
                 int total = cleaningFee + maintenance + lateFee;
 
+                // ✅ update mileage before checking maintenance
+                v.setMileage(v.getMileage() + km);
+
+                // ✅ check maintenance after mileage update
+                checkMaintenance(v);
+
                 v.setAvailable(true);
                 saveVehicles(); // save changes
 
@@ -131,13 +140,28 @@ public class Inventory {
         System.out.println("Vehicle ID not found.");
     }
 
+    // Basic check for maintenance
+    private void checkMaintenance(Vehicle v) {
+        if (v.getMileage() > 10000) {
+            v.setNeedsMaintenance(true);  // mark it
+            double cost = v.getMileage() * 0.05; // simple cost formula
+            v.setMaintenanceCost(cost);
+            System.out.println(
+                "Vehicle " + v.getVehicleId()
+                + " needs maintenance! Cost: $" + cost
+            );
+        }
+    }
+
     // ===== FILE SAVE/LOAD =====
     private void saveVehicles() {
         try (PrintWriter pw = new PrintWriter(new FileWriter(FILE_NAME))) {
             for (Vehicle v : vehicles) {
-                pw.println(v.getVehicleId() + "," + v.getBrandModel() + "," + 
-                           v.getMileage() + "," + v.getDailyRentalPrice() + "," + 
-                           v.isAvailable());
+                pw.println(
+                    v.getVehicleId() + "," + v.getBrandModel() + ","
+                    + v.getMileage() + "," + v.getDailyRentalPrice() + ","
+                    + v.isAvailable()
+                );
             }
         } catch (IOException e) {
             System.out.println("Error saving vehicles: " + e.getMessage());
