@@ -2,11 +2,12 @@ V1,Toyota Corolla,50000,50.0,true
 V2,Honda Civic,60000,55.0,true
 V3,Ford Focus,45000,45.0,true
 V4,Nissan Altima,70000,52.0,true
-V5,Hyundai Elantra,40000,48.0,true
+V5,Hyundai Elantra,50200,48.0,true
 V6,Kia Rio,35000,40.0,true
 V7,Chevrolet Malibu,65000,60.0,true
 V8,BMW 3 Series,30000,120.0,true
 V9,Mercedes C-Class,28000,130.0,true
 V10,Audi A4,32000,125.0,true
 V11,Hyundai Sonata,25000,88.0,true
-V12,Mercedes Benz G63,16000,245.0,true
+V12,Mercedes Benz G63,36000,245.0,true
+V013,Toyota Highlander,2000,34.0,true

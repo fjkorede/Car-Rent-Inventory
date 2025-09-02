@@ -3,8 +3,8 @@ import java.util.Scanner;
 // Main class (entry point of the program)
 public class Main {
     public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in); // For user input
-        Inventory inventory = new Inventory(); // Create an inventory with 10 sample vehicles
+        Scanner sc = new Scanner(System.in);   // For user input
+        Inventory inventory = new Inventory(); // Inventory manager
 
         while (true) {
             // Show menu options
@@ -26,55 +26,60 @@ public class Main {
             }
 
             // Handle choices
-            if (choice == 1) {
-                inventory.viewInventory();
+            switch (choice) {
+                case 1:
+                    inventory.displayVehicles(); // (renamed to match Inventory.java)
+                    break;
 
-            } else if (choice == 2) {
-                // Add new vehicle
-                System.out.print("Enter Vehicle ID: ");
-                String id = sc.nextLine();
+                case 2:
+                    // Add new vehicle
+                    System.out.print("Enter Vehicle ID: ");
+                    String id = sc.nextLine();
 
-                System.out.print("Enter Brand & Model: ");
-                String model = sc.nextLine();
+                    System.out.print("Enter Brand & Model: ");
+                    String model = sc.nextLine();
 
-                System.out.print("Enter Mileage (km): ");
-                int mileage = Integer.parseInt(sc.nextLine());
+                    System.out.print("Enter Mileage (km): ");
+                    int mileage = Integer.parseInt(sc.nextLine());
 
-                System.out.print("Enter Daily Rental Price: ");
-                double price = Double.parseDouble(sc.nextLine());
+                    System.out.print("Enter Daily Rental Price: ");
+                    double price = Double.parseDouble(sc.nextLine());
 
-                // By default, new vehicle is available
-                Vehicle newVehicle = new Vehicle(id, model, mileage, price, true);
-                inventory.addVehicle(newVehicle);
+                    Vehicle newVehicle = new Vehicle(id, model, mileage, price, true);
+                    inventory.addVehicle(newVehicle);
+                    System.out.println("Vehicle added successfully!");
+                    break;
 
-            } else if (choice == 3) {
-                // Update availability
-                System.out.print("Enter Vehicle ID: ");
-                String id = sc.nextLine();
+                case 3:
+                    // Update availability
+                    System.out.print("Enter Vehicle ID: ");
+                    String updateId = sc.nextLine();
 
-                System.out.print("Enter new availability (true/false): ");
-                boolean available = Boolean.parseBoolean(sc.nextLine());
+                    System.out.print("Enter new availability (true/false): ");
+                    boolean available = Boolean.parseBoolean(sc.nextLine());
 
-                inventory.updateAvailability(id, available);
+                    inventory.updateAvailability(updateId, available);
+                    break;
 
-            } else if (choice == 4) {
-                // Book vehicle
-                inventory.bookVehicle(sc);
+                case 4:
+                    // Book vehicle
+                    inventory.bookVehicle(sc);
+                    break;
 
-            } else if (choice == 5) {
-                // Return vehicle
-                inventory.returnVehicle(sc);
+                case 5:
+                    // Return vehicle
+                    inventory.returnVehicle(sc);
+                    break;
 
-            } else if (choice == 6) {
-                // Exit program
-                System.out.println("Exiting program. Goodbye!");
-                break;
+                case 6:
+                    // Exit program
+                    System.out.println("Exiting program. Goodbye!");
+                    sc.close();
+                    return; // break out of main
 
-            } else {
-                System.out.println("Invalid option. Please choose 1-6.");
+                default:
+                    System.out.println("Invalid option. Please choose 1-6.");
             }
         }
-
-        sc.close(); // Close scanner
     }
 }
