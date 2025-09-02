@@ -1,6 +1,6 @@
 import java.util.Scanner;
 
-// Main class (entry point of the program)
+// Main class 
 public class Main {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);   // For user input
@@ -14,7 +14,8 @@ public class Main {
             System.out.println("3. Update Vehicle Availability");
             System.out.println("4. Book Vehicle");
             System.out.println("5. Return Vehicle");
-            System.out.println("6. Exit");
+            System.out.println("6. View Transactions"); // 🔹 NEW
+            System.out.println("7. Exit");
             System.out.print("Choose an option: ");
 
             int choice;
@@ -28,7 +29,7 @@ public class Main {
             // Handle choices
             switch (choice) {
                 case 1:
-                    inventory.displayVehicles(); // (renamed to match Inventory.java)
+                    inventory.displayVehicles();
                     break;
 
                 case 2:
@@ -62,23 +63,24 @@ public class Main {
                     break;
 
                 case 4:
-                    // Book vehicle
                     inventory.bookVehicle(sc);
                     break;
 
                 case 5:
-                    // Return vehicle
                     inventory.returnVehicle(sc);
                     break;
 
                 case 6:
-                    // Exit program
+                    inventory.displayTransactions(); // 🔹 show transaction log
+                    break;
+
+                case 7:
                     System.out.println("Exiting program. Goodbye!");
                     sc.close();
-                    return; // break out of main
+                    return;
 
                 default:
-                    System.out.println("Invalid option. Please choose 1-6.");
+                    System.out.println("Invalid option. Please choose 1-7.");
             }
         }
     }
